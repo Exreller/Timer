@@ -1,31 +1,49 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class Counter : MonoBehaviour
+public class Timer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _text;
+    private float _timerValue;
+    private Coroutine _coroutine;
+    private float _delay = 0.5f;
+    private bool _isRuning = false;
 
-    private void Start()
+    public event Action<float> ValueChanged;
+
+    private void Update()
     {
-        _text.text = "";
-        StartCoroutine(CountDown(1));
-    }
-
-    private IEnumerator CountDown(float delay, int start = 10)
-    {
-        var wait = new WaitForSeconds(delay);
-
-        for(int i = start; i > 0; i--)
+        if (Input.GetMouseButtonDown(0))
         {
-            DisplayCountDown(i);
-            yield return wait;
+            SwitchTimer();
         }
     }
 
-    private void DisplayCountDown(int count)
+    private void SwitchTimer()
     {
-        _text.text = count.ToString("");
+        if (_coroutine == null)
+        {
+            _coroutine = StartCoroutine(CountDown());
+            _isRuning = true;
+        }
+        else if (_coroutine != null)
+        {
+            StopCoroutine(_coroutine);
+            _coroutine = null;
+            _isRuning = false;
+        }
+    }
+
+    private IEnumerator CountDown()
+    {
+        var wait = new WaitForSeconds(_delay);
+
+        while (_isRuning)
+        {
+            yield return wait;
+
+            _timerValue++;
+            ValueChanged?.Invoke(_timerValue);
+        }
     }
 }
