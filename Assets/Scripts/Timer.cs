@@ -7,7 +7,6 @@ public class Timer : MonoBehaviour
     private float _timerValue;
     private Coroutine _coroutine;
     private float _delay = 0.5f;
-    private bool _isRuning = false;
 
     public event Action<float> ValueChanged;
 
@@ -24,13 +23,11 @@ public class Timer : MonoBehaviour
         if (_coroutine == null)
         {
             _coroutine = StartCoroutine(CountDown());
-            _isRuning = true;
         }
         else if (_coroutine != null)
         {
             StopCoroutine(_coroutine);
             _coroutine = null;
-            _isRuning = false;
         }
     }
 
@@ -38,7 +35,7 @@ public class Timer : MonoBehaviour
     {
         var wait = new WaitForSeconds(_delay);
 
-        while (_isRuning)
+        while (true)
         {
             yield return wait;
 
